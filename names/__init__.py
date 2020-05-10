@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from os.path import abspath, join, dirname
 import random
+import codecs
 
 __title__ = 'names'
 __version__ = '0.3.0.post1'
@@ -8,7 +9,7 @@ __author__ = 'Trey Hunner'
 __license__ = 'MIT'
 
 __genders__ = ('male', 'female')
-__locales__ = ('en', 'ua', 'ua-latin', 'ru', 'ru-latin')
+__locales__ = ('en', 'ua', 'ua-latin', 'ru', 'ru-latin', 'penguin')
 
 full_path = lambda filename: abspath(join(dirname(__file__), filename))
 
@@ -32,12 +33,15 @@ FILES = {
     'ru-latin:first:male': full_path('dist.male.first.ru-latin'),
     'ru-latin:first:female': full_path('dist.female.first.ru-latin'),
     'ru-latin:last:male': full_path('dist.male.last.ru-latin'),
-    'ru-latin:last:female': full_path('dist.female.last.ru-latin')
+    'ru-latin:last:female': full_path('dist.female.last.ru-latin'),
+    'penguin:first:male': full_path('dist.male.first.penguin'),
+    'penguin:first:female': full_path('dist.female.first.penguin'),
+    'penguin:last': full_path('dist.all.last.penguin')
 }
 
 
 def get_name(filename):
-    with open(filename) as name_file:
+    with codecs.open(filename, encoding='utf8') as name_file:
         #Using cummulative wage of second name from end
         lines = name_file.readlines()
         prelast_cum_wage = float(lines[len(lines)-2].split()[2])
@@ -58,18 +62,20 @@ def get_first_name(gender=None, locale="en"):
             raise ValueError("For this locale you have to set a gender")
     if gender not in __genders__:
         raise ValueError("Only 'male' and 'female' are supported as gender")
-    return get_name(FILES['%s:first:%s' % (locale, gender)]).decode('utf-8').capitalize()
+    #return get_name(FILES['%s:first:%s' % (locale, gender)]).decode('utf-8').capitalize()
+    return get_name(FILES['%s:first:%s' % (locale, gender)]).capitalize()
 
 
 def get_last_name(gender=None, locale="en"):
     if locale not in __locales__:
         raise ValueError("Only next locales are supported:"+__locales__)
-    if locale == 'en':
+    if locale == 'en' or locale == 'penguin':
         return get_name(FILES['%s:last' % locale]).capitalize()
     else:
         if gender is None or gender not in __genders__:
             raise ValueError("For this locale you have to set a gender, 'male' or 'female'")
-        return get_name(FILES['%s:last:%s' % (locale, gender)]).decode('utf-8').capitalize()
+        #return get_name(FILES['%s:last:%s' % (locale, gender)]).decode('utf-8').capitalize()
+        return get_name(FILES['%s:last:%s' % (locale, gender)]).capitalize()
 
 
 def get_full_name(gender=None, locale="en"):
